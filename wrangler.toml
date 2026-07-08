@@ -1,0 +1,8 @@
+# Cloudflare Workers static-assets config for the ridegain-site.
+# No Worker script (main) — this deploys the repo as a static site.
+# Deploy: `npx wrangler deploy` (also what Cloudflare's Git build runs).
+name = "ridegain-site"
+compatibility_date = "2026-07-08"
+
+[assets]
+directory = "./"
