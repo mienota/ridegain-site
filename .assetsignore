@@ -1,4 +1,9 @@
+.git
+.git/**
+.wrangler
+.wrangler/**
 wrangler.toml
 .assetsignore
+.gitignore
 README.md
 DEPLOY.md
