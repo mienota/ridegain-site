@@ -3,30 +3,338 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ridegain</title>
+<title>Ridegain — Indoor training, by the numbers</title>
+<meta name="description" content="Ridegain is an indoor cycling app that keeps power, heart rate and cadence big and clear on your phone. Build workouts, track your fitness, and sync every ride to Strava — no ads, no tracking.">
+<meta name="theme-color" content="#0d0f11">
+<link rel="icon" href="/assets/icon.png">
+<meta property="og:title" content="Ridegain — Indoor training, by the numbers">
+<meta property="og:description" content="Power, heart rate and cadence, big and clear on your phone. Workouts, fitness tracking and automatic Strava sync.">
+<meta property="og:image" content="/assets/icon.png">
+<meta property="og:type" content="website">
 <style>
-  :root { color-scheme: light dark; }
-  body {
-    margin: 0; min-height: 100vh; display: grid; place-items: center;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    color: #1a1a1a; background: #ffffff;
+  @font-face{
+    font-family:"Barlow Condensed";
+    src:url("/assets/fonts/BarlowCondensed_700Bold.ttf") format("truetype");
+    font-weight:700;font-style:normal;font-display:swap;
   }
-  .card { text-align: center; padding: 40px 24px; }
-  h1 { font-size: 2rem; margin: 0 0 8px; }
-  p { color: #666; margin: 0 0 24px; }
-  a { color: #0b6bcb; }
-  @media (prefers-color-scheme: dark) {
-    body { color: #e6e6e6; background: #121212; }
-    p { color: #9a9a9a; }
-    a { color: #6db3f2; }
+  @font-face{
+    font-family:"Barlow";
+    src:url("/assets/fonts/Barlow_700Bold.ttf") format("truetype");
+    font-weight:700;font-style:normal;font-display:swap;
+  }
+  @font-face{
+    font-family:"Barlow";
+    src:url("/assets/fonts/Barlow_600SemiBold.ttf") format("truetype");
+    font-weight:600;font-style:normal;font-display:swap;
+  }
+
+  :root{
+    color-scheme:dark;
+    --bg:#0d0f11;
+    --bg-2:#111417;
+    --card:#171a1e;
+    --card-2:#1c2025;
+    --line:#282d33;
+    --text:#eceae3;
+    --muted:#9aa1a8;
+    --dim:#6c737b;
+    --amber:#f2a93b;
+    --amber-soft:#f6c06a;
+    --blue:#5f93bd;
+    --teal:#2ec7a5;
+    --red:#c65f64;
+    --maxw:1120px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:"Barlow",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-weight:600;line-height:1.6;-webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .display{font-family:"Barlow Condensed",sans-serif;font-weight:700;letter-spacing:.01em;line-height:.95}
+  .eyebrow{font-family:"Barlow Condensed",sans-serif;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);font-size:.82rem}
+  .amber{color:var(--amber)}
+
+  /* ---------- header ---------- */
+  header{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);
+    background:rgba(13,15,17,.72);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{display:flex;align-items:center;gap:11px}
+  .brand img{width:34px;height:34px;border-radius:9px}
+  .brand span{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.5rem;letter-spacing:.04em}
+  .nav a.pill{border:1px solid var(--line);padding:8px 16px;border-radius:999px;color:var(--muted);
+    font-size:.92rem;transition:.15s}
+  .nav a.pill:hover{border-color:var(--amber);color:var(--text)}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero::before{content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(1100px 520px at 78% -8%,rgba(242,169,59,.16),transparent 60%),
+      radial-gradient(760px 520px at 8% 12%,rgba(95,147,189,.10),transparent 62%),
+      linear-gradient(180deg,#0f1215,#0d0f11);
+    z-index:0}
+  .hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr .95fr;
+    gap:40px;align-items:center;padding-top:64px;padding-bottom:64px}
+  .hero h1{margin:16px 0 0;font-size:clamp(3.4rem,8vw,5.8rem)}
+  .hero h1 .l2{color:var(--amber)}
+  .hero .lead{margin:20px 0 0;font-size:1.16rem;color:var(--muted);font-weight:600;max-width:33ch}
+  .badges{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+  .store{display:flex;align-items:center;gap:11px;border:1px solid var(--line);background:var(--card);
+    padding:11px 18px;border-radius:14px}
+  .store .sub{font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);line-height:1}
+  .store .big{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.28rem;line-height:1.05}
+  .store svg{width:22px;height:22px;fill:var(--text);flex:none}
+  .trust{margin-top:22px;font-size:.9rem;color:var(--dim);display:flex;align-items:center;gap:8px}
+  .trust b{color:var(--muted);font-weight:700}
+
+  /* phone frame */
+  .phone{position:relative;justify-self:center;width:min(300px,78vw);
+    border:2px solid #2b3138;border-radius:38px;background:#05070a;padding:9px;
+    box-shadow:0 40px 80px -30px rgba(0,0,0,.85),0 0 0 1px rgba(242,169,59,.10),
+      0 0 90px -20px rgba(242,169,59,.25)}
+  .phone::before{content:"";position:absolute;top:15px;left:50%;transform:translateX(-50%);
+    width:78px;height:6px;border-radius:99px;background:#20262c;z-index:2}
+  .phone img{width:100%;border-radius:30px}
+
+  /* ---------- section scaffolding ---------- */
+  section{padding:84px 0}
+  .sec-head{max-width:640px;margin:0 auto 52px;text-align:center}
+  .sec-head h2{font-family:"Barlow Condensed",sans-serif;font-weight:700;letter-spacing:.01em;
+    font-size:clamp(2.1rem,4.6vw,3rem);line-height:1.02;margin:12px 0 0}
+  .sec-head p{color:var(--muted);margin:14px 0 0;font-size:1.05rem}
+
+  /* ---------- features ---------- */
+  .features{background:linear-gradient(180deg,var(--bg),var(--bg-2))}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 24px;
+    transition:.18s;position:relative}
+  .card:hover{border-color:#39414a;transform:translateY(-3px)}
+  .ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;margin-bottom:16px;
+    background:rgba(242,169,59,.12);border:1px solid rgba(242,169,59,.28)}
+  .ic svg{width:24px;height:24px;stroke:var(--amber);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .card h3{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.4rem;margin:0 0 8px;letter-spacing:.01em}
+  .card p{margin:0;color:var(--muted);font-size:.98rem;font-weight:600}
+
+  /* ---------- gallery ---------- */
+  .gallery{background:var(--bg)}
+  .shots{display:flex;gap:22px;overflow-x:auto;padding:6px 22px 26px;scroll-snap-type:x mandatory;
+    max-width:var(--maxw);margin:0 auto}
+  .shots::-webkit-scrollbar{height:8px}
+  .shots::-webkit-scrollbar-thumb{background:#242a30;border-radius:99px}
+  .shot{scroll-snap-align:center;flex:0 0 auto;width:230px;text-align:center}
+  .shot .frame{border:2px solid #262c33;border-radius:26px;background:#05070a;padding:7px;
+    box-shadow:0 24px 44px -26px rgba(0,0,0,.8)}
+  .shot .frame img{width:100%;border-radius:20px}
+  .shot .cap{display:block;margin-top:14px;color:var(--muted);font-size:.9rem}
+  .shot .cap b{display:block;color:var(--text);font-family:"Barlow Condensed",sans-serif;
+    font-weight:700;font-size:1.12rem;letter-spacing:.02em}
+
+  /* ---------- sensors strip ---------- */
+  .sensors{background:linear-gradient(180deg,var(--bg-2),var(--bg));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .sensors .wrap{text-align:center}
+  .sensors h2{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:clamp(1.9rem,4vw,2.6rem);margin:12px 0 6px}
+  .sensors p{color:var(--muted);margin:0 auto;max-width:52ch}
+  .chips{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:28px}
+  .chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:9px 20px;
+    font-family:"Barlow Condensed",sans-serif;font-weight:700;letter-spacing:.06em;font-size:1.02rem;color:var(--muted)}
+  .chip b{color:var(--amber)}
+
+  /* ---------- philosophy ---------- */
+  .philo{background:var(--bg)}
+  .philo .wrap{max-width:820px;text-align:center}
+  .philo h2{font-family:"Barlow Condensed",sans-serif;font-weight:700;
+    font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.04;margin:16px 0 0}
+  .philo p{color:var(--muted);font-size:1.14rem;margin:20px auto 0;max-width:56ch}
+  .philo .nots{display:flex;flex-wrap:wrap;gap:10px 14px;justify-content:center;margin-top:30px}
+  .not{color:var(--dim);font-size:.95rem;display:flex;align-items:center;gap:8px}
+  .not svg{width:16px;height:16px;stroke:var(--red);fill:none;stroke-width:2.4;stroke-linecap:round}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--bg-2);border-top:1px solid var(--line);padding:48px 0 40px}
+  .foot{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between}
+  .foot .brand span{font-size:1.35rem}
+  .foot nav{display:flex;gap:26px;flex-wrap:wrap}
+  .foot nav a{color:var(--muted);font-size:.96rem;transition:.15s}
+  .foot nav a:hover{color:var(--amber)}
+  .copy{color:var(--dim);font-size:.86rem;margin-top:26px}
+
+  @media(max-width:860px){
+    .hero .wrap{grid-template-columns:1fr;text-align:center;padding-top:52px;gap:44px}
+    .hero .lead{margin-left:auto;margin-right:auto}
+    .badges,.trust{justify-content:center}
+    .grid{grid-template-columns:1fr}
+    section{padding:66px 0}
   }
 </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Ridegain</h1>
-    <p>Indoor cycling training app.</p>
-    <p><a href="privacy.html">Privacy Policy</a></p>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="/">
+      <img src="/assets/icon.png" alt="Ridegain">
+      <span>RIDEGAIN</span>
+    </a>
+    <a class="pill" href="/privacy.html">Privacy</a>
   </div>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <p class="eyebrow">Indoor cycling · Power training</p>
+      <h1 class="display">Indoor training,<br><span class="l2">by the numbers.</span></h1>
+      <p class="lead">Power, heart rate and cadence — big, clear and impossible to misread on your phone. Build workouts, track your fitness, and let every ride sync to Strava automatically.</p>
+
+      <div class="badges">
+        <div class="store">
+          <svg viewBox="0 0 24 24"><path d="M3.6 2.3 13 12 3.6 21.7c-.4-.2-.6-.6-.6-1.1V3.4c0-.5.2-.9.6-1.1zM14.4 13.4l2.6 2.6-9.1 5.2 6.5-7.8zM17.9 9.4l3 1.7c.7.4.7 1.4 0 1.8l-3 1.7-2.9-2.9 2.9-2.3zM7.9 2.8l9.1 5.2-2.6 2.6-6.5-7.8z"/></svg>
+          <div><div class="sub">Coming soon to</div><div class="big">Google Play</div></div>
+        </div>
+        <div class="store">
+          <svg viewBox="0 0 24 24"><path d="M16.5 2c.1 1.2-.4 2.4-1.1 3.2-.8.9-2 1.6-3.2 1.5-.1-1.2.5-2.4 1.2-3.1.8-.9 2.1-1.5 3.1-1.6zM20 17c-.5 1.2-.8 1.7-1.5 2.8-1 1.5-2.3 3.3-4 3.3-1.5 0-1.9-1-4-1-2 0-2.5 1-4 1-1.6 0-2.9-1.6-3.9-3.1C-.2 17.7-.5 12.6 1.6 9.9c1-1.3 2.5-2.1 4-2.1 1.6 0 2.6 1 3.9 1 1.3 0 2-1 3.9-1 1.3 0 2.7.7 3.7 2-3.2 1.8-2.7 6.3.9 7.3z"/></svg>
+          <div><div class="sub">Coming soon to</div><div class="big">App Store</div></div>
+        </div>
+      </div>
+
+      <p class="trust">🔒 <b>No ads. No tracking.</b> Your data stays on your device.</p>
+    </div>
+
+    <div class="phone">
+      <img src="/assets/shots/06_active.png" alt="Ridegain live workout screen showing power, cadence and heart rate" width="1080" height="1740">
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FEATURES ===================== -->
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Why Ridegain</p>
+      <h2>Everything that matters. Nothing that doesn't.</h2>
+      <p>Your phone stays portrait, numbers-first and ultra-light — so the only thing between you and the effort is the effort.</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg></div>
+        <h3>Numbers, front and center</h3>
+        <p>Power, heart rate and cadence in big digits. See your target, the gap to it, and whether you're in-zone at a glance.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div>
+        <h3>Workouts &amp; ERG mode</h3>
+        <p>Presets — Sweet Spot, VO₂ Max, Endurance, FTP Test — plus a simple editor for your own. ERG mode sets the resistance for you.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 16l3-4 3 2 4-6"/></svg></div>
+        <h3>Fitness tracking</h3>
+        <p>CTL / ATL / TSB for form and fatigue, plus W/kg, a power profile (5s · 1m · 5m · 20m) and rider-type analysis.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 8a8 8 0 0 1 14-3M20 5v4h-4M20 16a8 8 0 0 1-14 3M4 19v-4h4"/></svg></div>
+        <h3>Automatic Strava sync</h3>
+        <p>Indoor rides upload themselves — so your outdoor rides, runs and other apps all live in one place on Strava.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3z"/></svg></div>
+        <h3>Ultra-light &amp; offline</h3>
+        <p>Sensors connect over Bluetooth. No account, no sign-up — you can train even with no network at all.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+        <h3>Private by design</h3>
+        <p>Your data lives on your device. No advertising, and no third-party analytics or tracking SDKs — none.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== GALLERY ===================== -->
+<section class="gallery">
+  <div class="sec-head wrap">
+    <p class="eyebrow">A look inside</p>
+    <h2>Built to be read at a glance</h2>
+    <p>Dark, high-contrast and legible mid-effort — even when you're gasping through the last interval.</p>
+  </div>
+  <div class="shots">
+    <div class="shot">
+      <div class="frame"><img src="/assets/shots/06_active.png" alt="Live workout screen"></div>
+      <span class="cap"><b>Live workout</b>Target, zone, power, HR &amp; cadence</span>
+    </div>
+    <div class="shot">
+      <div class="frame"><img src="/assets/shots/01_home.png" alt="Home screen"></div>
+      <span class="cap"><b>Home</b>Start a ride, form &amp; fitness at a glance</span>
+    </div>
+    <div class="shot">
+      <div class="frame"><img src="/assets/shots/03_fitness.png" alt="Fitness screen"></div>
+      <span class="cap"><b>Fitness</b>W/kg, power profile &amp; rider type</span>
+    </div>
+    <div class="shot">
+      <div class="frame"><img src="/assets/shots/05_select.png" alt="Workout selection screen"></div>
+      <span class="cap"><b>Workouts</b>Presets or build your own</span>
+    </div>
+    <div class="shot">
+      <div class="frame"><img src="/assets/shots/02_history.png" alt="Training history screen"></div>
+      <span class="cap"><b>History</b>Every ride, by week, month or year</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SENSORS ===================== -->
+<section class="sensors">
+  <div class="wrap">
+    <p class="eyebrow">Works with your gear</p>
+    <h2>Bring your own sensors</h2>
+    <p>Connect over Bluetooth (BLE) to the equipment you already ride with — no proprietary hardware, no lock-in.</p>
+    <div class="chips">
+      <span class="chip"><b>FTMS</b> Smart trainers</span>
+      <span class="chip"><b>Cycling Power</b> Power meters</span>
+      <span class="chip"><b>Heart Rate</b> HR straps</span>
+      <span class="chip"><b>CSC</b> Cadence sensors</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PHILOSOPHY ===================== -->
+<section class="philo">
+  <div class="wrap">
+    <p class="eyebrow">The Ridegain way</p>
+    <h2>Everything else, out of the way.</h2>
+    <p>Leave the video and the virtual worlds to other apps or your iPad. Ridegain does one thing well: it shows the number you should be hitting, and how your body is responding — lighter, faster and cheaper than the alternatives.</p>
+    <div class="nots">
+      <span class="not"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg> No video streaming</span>
+      <span class="not"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg> No 3D worlds</span>
+      <span class="not"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg> No ads or trackers</span>
+      <span class="not"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg> No account required</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <a class="brand" href="/">
+        <img src="/assets/icon.png" alt="Ridegain" width="34" height="34">
+        <span>RIDEGAIN</span>
+      </a>
+      <nav>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="mailto:mitkcycling@gmail.com">Contact</a>
+        <a href="https://www.strava.com" rel="noopener" target="_blank">Strava</a>
+      </nav>
+    </div>
+    <p class="copy">© 2026 Ridegain · Indoor cycling training app</p>
+  </div>
+</footer>
+
 </body>
 </html>
