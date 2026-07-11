@@ -7,3 +7,7 @@ wrangler.toml
 .gitignore
 README.md
 DEPLOY.md
+privacy.md
+.git/
+.github/
+node_modules/
