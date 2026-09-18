@@ -1,55 +1,58 @@
-# Deploy runbook — Cloudflare Pages + ridegain.app
+# Deploy runbook — ridegain.app
 
-Hosting: **Cloudflare Pages** (Git integration) on the domain **ridegain.app**.
-Cloudflare account: `mieno.tk0909@gmail.com` (account id `ff3acd37637579e0ea878c1febe384db`).
+**Hosting**: Cloudflare **Workers static assets** (a Worker named `ridegain-site`
+with no script, serving the repo root). Configured entirely by `wrangler.toml`.
+**Domain**: `ridegain.app`, registered through Cloudflare Registrar in the same account.
 
-Only Step 1 and Step 2 need dashboard clicks (no API for new domain registration
-or GitHub OAuth). Everything else is automatic once those are done.
+Account / billing / owner details are kept out of this public repo — see
+`docs/APP_MANAGEMENT.md` in the private app repository.
 
-## Step 1 — Register ridegain.app (dashboard, ~2 min)
+## Updating the site
 
-1. https://dash.cloudflare.com → left sidebar **Domain Registration → Register Domains**.
-2. Search `ridegain.app` (~$14/yr) → add to cart → checkout.
-3. On completion the zone `ridegain.app` is added to the account automatically with
-   Cloudflare nameservers. No DNS delegation step needed.
+1. Edit `index.html` / `privacy.html` / `terms.html` / `delete-account.html`.
+   When you change a policy, update the Japanese draft (`privacy.md`, `terms.md`)
+   and the published English HTML **together**, and bump the "Last updated" date.
+2. Commit and `git push` to `main`.
+3. Cloudflare's Git integration runs `wrangler deploy` automatically. No build step.
+4. Verify (see below).
 
-## Step 2 — Create the Pages project with Git (dashboard, ~2 min)
+Manual deploy from a workstation, if the Git integration is ever unavailable:
 
-1. https://dash.cloudflare.com → **Workers & Pages → Create → Pages → Connect to Git**.
-2. Authorize GitHub (first time only) and select repo **`mienota/ridegain-site`**.
-3. Settings:
-   - Project name: `ridegain-site`
-   - Production branch: `main`
-   - Framework preset: **None**
-   - Build command: *(empty)*
-   - Build output directory: `/`
-4. **Save and Deploy** → first deploy publishes to `https://ridegain-site.pages.dev/`.
+```sh
+npx wrangler deploy
+```
 
-After this, every push to `main` auto-deploys.
+## Verifying a deploy
 
-## Step 3 — Attach the custom domain (dashboard, ~1 min)
+```sh
+curl -sL -o /dev/null -w '%{url_effective} %{http_code}\n' https://ridegain.app/privacy.html
+curl -s -o /dev/null -w 'README.md must be 404: %{http_code}\n' https://ridegain.app/README.md
+curl -s -o /dev/null -w 'terms.md must be 404: %{http_code}\n'  https://ridegain.app/terms.md
+```
 
-1. In the `ridegain-site` Pages project → **Custom domains → Set up a custom domain**.
-2. Enter `ridegain.app`. Since the zone lives in the same account, Cloudflare creates
-   the DNS record and provisions the TLS certificate automatically (a few minutes).
-3. (Optional) Also add `www.ridegain.app` and redirect it to the apex.
+- Public pages must return `200`. Note that `/privacy.html` answers `307 → /privacy`
+  because Workers static assets serve extensionless paths; following the redirect
+  must reach `200`. The `.html` URLs registered with Play Console / Strava are fine.
+- Anything listed in `.assetsignore` must return `404`. If a repo-only file starts
+  returning `200`, it is missing from `.assetsignore` — add it and push.
 
-Verify:
-- https://ridegain.app/ → landing page
-- https://ridegain.app/privacy.html → privacy policy
+## External references to keep in sync
 
-## Step 4 — Update external references to the new URL
+| Where | Value |
+|---|---|
+| Google Play Console — Privacy Policy URL | `https://ridegain.app/privacy.html` |
+| Google Play Console — Account deletion URL | `https://ridegain.app/delete-account.html` |
+| Strava API application | privacy policy + terms URLs on the same domain |
 
-- **App Store Connect / Google Play Console**: set the Privacy Policy URL to
-  `https://ridegain.app/privacy.html`.
-- Any in-app links to the old `mienota.github.io/ridegain-site/...` URL.
+## One-time setup (already done — kept for reference)
 
-## Step 5 — (optional) Retire GitHub Pages
-
-Once ridegain.app is live, disable the old GitHub Pages site to avoid duplicate content:
-GitHub repo → Settings → Pages → set Source to **None**.
-
-## Updating the site later
-
-Just edit `index.html` / `privacy.html`, commit, and `git push`. Cloudflare Pages
-rebuilds and deploys automatically. No build step, files served from repo root.
+1. **Domain**: Cloudflare dashboard → Domain Registration → Register Domains →
+   `ridegain.app`. The zone is added to the account automatically with Cloudflare
+   nameservers; no DNS delegation step.
+2. **Worker + Git integration**: Workers & Pages → Create → Workers → connect the
+   GitHub repo `mienota/ridegain-site`. Production branch `main`, no build command;
+   `wrangler.toml` supplies the rest.
+3. **Custom domain**: attach `ridegain.app` to the Worker. Because the zone lives in
+   the same account, Cloudflare creates the DNS record and provisions TLS automatically.
+4. **Retired**: the old GitHub Pages site at `mienota.github.io/ridegain-site`
+   (repo → Settings → Pages → Source = None).
