@@ -1,13 +1,22 @@
+# 公開しないファイル（Workers static assets は、ここに挙げたものをアップロードしない）
+# 反映確認: curl -I https://ridegain.app/README.md → 404 であること
+# ディレクトリは "x" と "x/**" の両形を残している（6608ad0 の意図を維持）
+
+# リポジトリ / ツールのメタデータ
 .git
 .git/**
+.github
+.github/**
 .wrangler
 .wrangler/**
-wrangler.toml
-.assetsignore
+node_modules
+node_modules/**
 .gitignore
+.assetsignore
+wrangler.toml
+
+# 開発用ドキュメント・日本語の下書き（公開の正は同名の .html 側）
 README.md
 DEPLOY.md
 privacy.md
-.git/
-.github/
-node_modules/
+terms.md
