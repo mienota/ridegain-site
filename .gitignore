@@ -1,0 +1,9 @@
+# Wrangler のローカルキャッシュ・一時ファイル（アカウント情報を含むため追跡しない）
+.wrangler/
+
+# OS / エディタ
+.DS_Store
+Thumbs.db
+
+# 依存（このサイトはビルドなしだが、誤コミット防止に置く）
+node_modules/
